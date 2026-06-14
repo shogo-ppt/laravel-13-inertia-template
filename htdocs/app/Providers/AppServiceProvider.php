@@ -27,7 +27,10 @@ class AppServiceProvider extends ServiceProvider
 
         if ($this->app->environment('local')) {
             DB::listen(function (QueryExecuted $query) {
-                Log::channel('query')->info($query->toRawSql().' ('.$query->time.'ms)');
+                Log::channel('query')->info($query->sql, [
+                    'bindings' => $query->bindings,
+                    'time' => $query->time.'ms',
+                ]);
             });
         }
     }
