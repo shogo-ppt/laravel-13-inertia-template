@@ -1,0 +1,9 @@
+{
+    "cloud": false,
+    "guidelines": true,
+    "skills": [
+        "laravel-best-practices",
+        "inertia-vue-development",
+        "tailwindcss-development"
+    ]
+}
