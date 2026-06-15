@@ -2,6 +2,19 @@
 
 Laravel 13 + Inertia.js のテンプレートプロジェクト。
 
+## プロジェクト構成
+
+- **Laravel アプリ本体は `htdocs/` 配下**(リポジトリ直下ではない)。
+  `app/` `routes/` `resources/` `tests/` などは `htdocs/` 以下にある。
+- artisan / composer / npm / pint / test などは **Docker コンテナ内**で実行する。
+  ```bash
+  docker compose exec app <command>
+  # 例: docker compose exec app php artisan migrate
+  ```
+- **`.env` は 2 系統あり役割が異なる**。混同しないこと。
+  - ルート直下 `.env` … Docker Compose 用(`COMPOSE_PROJECT_NAME` など)。
+  - `htdocs/.env` … Laravel アプリケーション用(DB・メール・ログ設定など)。
+
 ## Git / GitHub 運用ルール
 
 ### コミットメッセージ
@@ -26,3 +39,22 @@ Laravel 13 + Inertia.js のテンプレートプロジェクト。
 ## 開発環境
 - PHP / Composer / npm が利用可能。
 - Laravel Boost(MCP)が有効。DB スキーマ参照やドキュメント検索に活用する。
+
+## コーディング規約
+
+### フロントエンド(Vue + Inertia)
+- **Vue 3 + TypeScript** を使用。新規コードも型を付ける(ビルド時に `vue-tsc` が型チェックする)。
+- 画面コンポーネントは `resources/js/Pages`、共通 UI は `Components`、レイアウトは `Layouts` に置く。
+- 認証まわりは **Laravel Breeze**(Vue + TS)のスキャフォールド。既存の Components / Layouts を再利用する。
+- JS からのルート参照は **Ziggy の `route()`** ヘルパを使う(URL のハードコードを避ける)。
+
+### コードスタイル / 品質チェック
+- PHP は **Laravel Pint** で整形する。
+  ```bash
+  docker compose exec app ./vendor/bin/pint
+  ```
+- フロントエンドは `npm run build` 時に `vue-tsc` で型チェックされる。
+- テストは **PHPUnit**(`htdocs/tests`、SQLite in-memory)。
+  ```bash
+  docker compose exec app php artisan test
+  ```
