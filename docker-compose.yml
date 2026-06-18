@@ -1,3 +1,5 @@
+name: laravel-13-inertia-template
+
 services:
   app:
     build: ./docker/php

@@ -11,8 +11,9 @@ Laravel 13 + Inertia.js のテンプレートプロジェクト。
   docker compose exec app <command>
   # 例: docker compose exec app php artisan migrate
   ```
-- **`.env` は 2 系統あり役割が異なる**。混同しないこと。
-  - ルート直下 `.env` … Docker Compose 用(`COMPOSE_PROJECT_NAME` など)。
+- **Docker Compose のプロジェクト名は `docker-compose.yml` の `name:` で管理する**(コミット済み・チーム共有)。
+- **`.env` の扱いに注意**。
+  - ルート直下 `.env` … Docker Compose 用のローカル上書き専用。**git 管理外**(`.gitignore` で除外)。共有すべき設定は `docker-compose.yml` に持たせる。
   - `htdocs/.env` … Laravel アプリケーション用(DB・メール・ログ設定など)。
 
 ## Git / GitHub 運用ルール
