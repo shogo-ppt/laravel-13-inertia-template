@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# Laravel アプリ本体は htdocs/ 配下にあるため、各ジョブの実行ディレクトリを揃える
+defaults:
+  run:
+    working-directory: htdocs
+
+jobs:
+  # PHP のコード整形チェック(Pint)
+  pint:
+    name: Pint (コードスタイル)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP のセットアップ
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Composer 依存をインストール
+        uses: ramsey/composer-install@v3
+        with:
+          working-directory: htdocs
+
+      - name: Pint でコードスタイルを検査
+        run: ./vendor/bin/pint --test
+
+  # フロントエンドの型チェック(vue-tsc)+ ビルド確認
+  frontend:
+    name: フロントエンド (型チェック / ビルド)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node.js のセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: htdocs/package-lock.json
+
+      - name: npm 依存をインストール
+        run: npm ci
+
+      - name: 型チェックとビルド
+        run: npm run build
+
+  # PHPUnit テスト(SQLite in-memory)
+  test:
+    name: PHPUnit テスト
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP のセットアップ
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Composer 依存をインストール
+        uses: ramsey/composer-install@v3
+        with:
+          working-directory: htdocs
+
+      - name: .env を用意
+        run: cp .env.example .env
+
+      - name: アプリケーションキーを生成
+        run: php artisan key:generate
+
+      - name: テストを実行
+        run: php artisan test
