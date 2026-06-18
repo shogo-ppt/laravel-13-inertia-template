@@ -81,6 +81,20 @@ jobs:
         with:
           working-directory: htdocs
 
+      - name: Node.js のセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: htdocs/package-lock.json
+
+      - name: npm 依存をインストール
+        run: npm ci
+
+      # Inertia ページのレンダリングに Vite manifest が必要なため事前にビルドする
+      - name: フロントエンドをビルド
+        run: npm run build
+
       - name: .env を用意
         run: cp .env.example .env
 
