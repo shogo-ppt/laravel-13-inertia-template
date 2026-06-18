@@ -38,6 +38,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: PHP のセットアップ
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      # app.ts が vendor/tightenco/ziggy を import するため Composer 依存が必要
+      - name: Composer 依存をインストール
+        uses: ramsey/composer-install@v3
+        with:
+          working-directory: htdocs
+
       - name: Node.js のセットアップ
         uses: actions/setup-node@v4
         with:
